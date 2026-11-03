@@ -12,8 +12,8 @@ android {
         applicationId = "com.darksidestudio.pulsestudio"
         minSdk = 26
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.2.0-dev01"
+        versionCode = 5
+        versionName = "1.2.0-dev02"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

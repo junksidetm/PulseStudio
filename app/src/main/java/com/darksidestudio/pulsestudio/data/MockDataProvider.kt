@@ -1,19 +1,27 @@
 package com.darksidestudio.pulsestudio.data
 
+/**
+ * Unified Single Source of Truth for Pulse Studio.
+ * Both "The AI Way" and "The Other's Way" consume this exact identical dataset,
+ * allowing an authentic 1:1 side-by-side shootout between AI-crafted Material 3 Expressive
+ * and real-world Open Source Community Material 3 implementations.
+ */
 object MockDataProvider {
 
+    val activeTrack = MediaTrack(
+        id = "trk-1",
+        title = "Midnight Horizon",
+        artist = "Aetheria",
+        album = "Digital Echoes",
+        durationText = "3:42",
+        durationSeconds = 222,
+        category = "Synthwave",
+        isFavorite = true,
+        bitrate = "FLAC 24-bit / 96kHz"
+    )
+
     val sampleTracks = listOf(
-        MediaTrack(
-            id = "trk-1",
-            title = "Midnight Horizon",
-            artist = "Aetheria",
-            album = "Digital Echoes",
-            durationText = "3:42",
-            durationSeconds = 222,
-            category = "Synthwave",
-            isFavorite = true,
-            bitrate = "FLAC 24-bit"
-        ),
+        activeTrack,
         MediaTrack(
             id = "trk-2",
             title = "Neon District Drift",
@@ -49,109 +57,88 @@ object MockDataProvider {
         )
     )
 
-    val samplePatches = listOf(
-        PatchModule(
-            id = "patch-emoji",
-            name = "Custom 3D Emoji Font",
+    val playbackSpeeds = listOf("0.5x", "1.0x", "1.25x", "1.5x", "2.0x")
+
+    val audioTracks = listOf(
+        "English [5.1 Surround]",
+        "Japanese [Original FLAC]",
+        "Director's Commentary [Stereo]"
+    )
+
+    val categories = listOf("All", "Synthwave", "Ambient", "Electronic", "Lo-Fi")
+
+    val studioPresets = listOf(
+        StudioPreset(
+            id = "pre-1",
+            name = "Studio Balanced",
+            description = "Neutral frequency response calibrated for reference studio monitors."
+        ),
+        StudioPreset(
+            id = "pre-2",
+            name = "Bass Resonance",
+            description = "Sub-bass harmonic boost with dynamic analog warmth."
+        ),
+        StudioPreset(
+            id = "pre-3",
+            name = "Vocal Clarity",
+            description = "Mid-range enhancement highlighting vocal presence and dialogue."
+        ),
+        StudioPreset(
+            id = "pre-4",
+            name = "Atmospheric 3D",
+            description = "Expansive binaural stereo widening with spatial reverberation."
+        )
+    )
+
+    val studioModules = listOf(
+        SystemModule(
+            id = "mod-emoji",
+            name = "Dynamic Color Theming",
             version = "v4.1.1",
-            description = "Load TrueType / OpenType 3D emoji fonts dynamically without root.",
-            targetApp = "com.google.android.inputmethod.latin",
+            description = "Harmonize canvas palette with Material You dynamic wallpaper scheme.",
+            category = "Theming",
             isEnabled = true,
             isCore = true
         ),
-        PatchModule(
-            id = "patch-frosted",
-            name = "Seamless Frosted Glass",
-            version = "v2.0.4",
-            description = "Edge-to-edge keyboard blur extending seamlessly into bottom navigation bar.",
-            targetApp = "com.google.android.inputmethod.latin",
-            isEnabled = true,
-            isCore = false
-        ),
-        PatchModule(
-            id = "patch-haptics",
-            name = "Keypress Vibration Intensity",
-            version = "v1.1.0",
-            description = "Controls amplitude strength instead of millisecond duration.",
-            targetApp = "com.google.android.inputmethod.latin",
-            isEnabled = false,
-            isExperimental = true
-        ),
-        PatchModule(
-            id = "patch-speed",
+        SystemModule(
+            id = "mod-speed",
             name = "Hardware Video Decoders",
             version = "v3.2.0",
-            description = "Direct libmpv hardware video pipe with zero copy surface rendering.",
-            targetApp = "com.marlboro.mpvex",
+            description = "Zero-copy surface rendering via direct libmpv hardware pipeline.",
+            category = "Engine",
             isEnabled = true,
             isCore = true
         ),
-        PatchModule(
-            id = "patch-microg",
+        SystemModule(
+            id = "mod-haptics",
+            name = "Haptic Feedback Engine",
+            version = "v1.1.0",
+            description = "Controls amplitude vibration intensity instead of millisecond duration.",
+            category = "Haptics",
+            isEnabled = false,
+            isCore = false
+        ),
+        SystemModule(
+            id = "mod-microg",
             name = "SafetyNet Attestation Spoof",
             version = "v0.3.1",
             description = "Redirect GmsCore attestation callbacks through unprivileged Binder.",
-            targetApp = "com.google.android.gms",
+            category = "Security",
             isEnabled = true,
             isCore = true
+        ),
+        SystemModule(
+            id = "mod-frosted",
+            name = "Seamless Frosted Glass",
+            version = "v2.0.4",
+            description = "Edge-to-edge translucent blur extending into bottom navigation bar.",
+            category = "Theming",
+            isEnabled = true,
+            isCore = false
         )
     )
 
-    val sampleTimeline = listOf(
-        TimelineCard(
-            id = "tm-1",
-            title = "Architecting Expressive Components",
-            snippet = "Refactored the segmented button hierarchy and replaced flat tabs with dynamic spring-loaded chips.",
-            mood = "Focused",
-            dateText = "Today • 2:15 PM",
-            tag = "Design"
-        ),
-        TimelineCard(
-            id = "tm-2",
-            title = "Zero-OOM Canvas Rendering",
-            snippet = "Eliminated Dalvik heap allocations on continuous audio waveforms using pre-allocated Path buffers.",
-            mood = "Energetic",
-            dateText = "Yesterday • 8:40 PM",
-            tag = "Performance"
-        ),
-        TimelineCard(
-            id = "tm-3",
-            title = "FOSS Design Convergence",
-            snippet = "Studied June and Rhythm layout systems to harmonize density with modern Material 3 Expressive guidelines.",
-            mood = "Reflective",
-            dateText = "Oct 30 • 11:10 AM",
-            tag = "Research"
-        )
-    )
-
-    val sampleTweaks = listOf(
-        SystemTweak(
-            id = "tw-1",
-            title = "High Refresh Rate Lock (120Hz)",
-            summary = "Forces PeakRefreshRate to match panel limit regardless of battery saver.",
-            isEnabled = true,
-            category = "Display"
-        ),
-        SystemTweak(
-            id = "tw-2",
-            title = "Spacebar Cursor Trackpad Mode",
-            summary = "Persistent trackpad navigation across reboots and Phenotype updates.",
-            isEnabled = true,
-            category = "Input"
-        ),
-        SystemTweak(
-            id = "tw-3",
-            title = "Universal Language Models",
-            summary = "Allowlist dictionary prediction engines across all global locales.",
-            isEnabled = true,
-            category = "AI Tools"
-        ),
-        SystemTweak(
-            id = "tw-4",
-            title = "Aggressive Doze Exemption",
-            summary = "Bypass thermal power throttling for background audio synchronization.",
-            isEnabled = false,
-            category = "Battery"
-        )
-    )
+    // Aliases for compatibility
+    val samplePatches = studioModules
+    val sampleTweaks = studioModules
 }

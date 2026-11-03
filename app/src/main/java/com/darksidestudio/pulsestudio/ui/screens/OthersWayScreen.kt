@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,45 +23,64 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.EditNote
+import androidx.compose.material.icons.rounded.Equalizer
 import androidx.compose.material.icons.rounded.Extension
-import androidx.compose.material.icons.rounded.Fingerprint
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.FormatColorFill
+import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.Keyboard
-import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Movie
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.RadioButtonChecked
+import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.TextFields
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Vibration
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,50 +93,60 @@ import com.darksidestudio.pulsestudio.data.MockDataProvider
 import com.darksidestudio.pulsestudio.ui.components.JuneSettingsItem
 import com.darksidestudio.pulsestudio.ui.components.JuneSettingsSection
 import com.darksidestudio.pulsestudio.ui.components.MaterialChevron
+import kotlinx.coroutines.launch
 
 /**
  * "The Other's Way" Screen:
- * Synthesizes authentic Material 3 Community design choices directly from:
- * - DenserMeerkat/June: Connected settings list architecture (JuneConnectedList & JuneConnectedItem)
- *   with position-aware adaptive corners (28dp/8dp), interactive spring tactile morphing, and pill search bar.
- * - junksidetm/Gboard-patches: Vector chevrons, hairline dividers, M3 switches with checkmark thumbs.
- * - marlboro-advance/mpvEx: SingleChoiceSegmentedButtonRow rate selector and audio track dropdown.
- * - cromaguy/Rhythm: Docked mini-player bar with live progress indicator and queue play/pause.
- * - morpheapp/microg-RE: System status cards and service availability indicators.
- * - MorpheApp/morphe-manager: Module catalog with version badges and inclusion toggles.
+ * Renders the EXACT IDENTICAL Unified Studio Dataset using the Open Source Community's
+ * Material 3 Design Patterns:
+ * - DenserMeerkat/June: Connected settings lists with 28dp/8dp adaptive corners and tactile spring physics
+ * - cromaguy/Rhythm: Docked mini-player bar with live progress indicator and playback toggle
+ * - marlboro-advance/mpvEx: Segmented rate buttons and dropdown media selector
+ * - junksidetm/Gboard-patches: Vector chevrons, hairline dividers, and switches with checkmark thumbs
+ * - morpheapp/microg-RE: System service status banners and indicators
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun OthersWayScreen(
     onNavigateBack: () -> Unit
 ) {
-    // Search query state (June style search)
+    val coroutineScope = rememberCoroutineScope()
+
+    // Unified Mock State (IDENTICAL to AI Way)
+    val track = MockDataProvider.activeTrack
+    var isPlaying by remember { mutableStateOf(true) }
+    var isFavorite by remember { mutableStateOf(track.isFavorite) }
+
+    // Category Filter Chips
+    var selectedCategory by remember { mutableStateOf("All") }
+
+    // Search query
     var searchQuery by remember { mutableStateOf("") }
 
-    // mpvEx Playback speed state
-    val playbackSpeeds = listOf("0.5x", "1.0x", "1.25x", "1.5x", "2.0x")
+    // DSP Tuning Sliders
+    var spatialResonance by remember { mutableFloatStateOf(0.78f) }
+    var hapticIntensity by remember { mutableFloatStateOf(0.65f) }
+
+    // Playback Speed
+    val speeds = MockDataProvider.playbackSpeeds
     var selectedSpeedIndex by remember { mutableIntStateOf(1) }
 
-    // mpvEx Audio track dropdown menu
-    var isAudioMenuExpanded by remember { mutableStateOf(false) }
-    var selectedAudioTrack by remember { mutableStateOf("English [5.1 Surround]") }
-    val audioTracks = listOf("English [5.1 Surround]", "Japanese [Original FLAC]", "Director's Commentary [Stereo]")
+    // Audio Stream Track & Dropdown Menu
+    val audioTracks = MockDataProvider.audioTracks
+    var selectedAudioTrack by remember { mutableStateOf(audioTracks.first()) }
+    var isAudioMenuOpen by remember { mutableStateOf(false) }
 
-    // Gboard-patches switch states
-    val tweaks = remember { MockDataProvider.sampleTweaks }
-    var tweakStates by remember { mutableStateOf(tweaks.associate { it.id to it.isEnabled }) }
+    // Studio Preset Selection (Radio Group)
+    val presets = MockDataProvider.studioPresets
+    var selectedPresetId by remember { mutableStateOf(presets.first().id) }
 
-    // Morphe Manager patch switches
-    val patches = remember { MockDataProvider.samplePatches }
-    var patchStates by remember { mutableStateOf(patches.associate { it.id to it.isEnabled }) }
+    // System Modules Toggle States
+    val modules = MockDataProvider.studioModules
+    var moduleStates by remember { mutableStateOf(modules.associate { it.id to it.isEnabled }) }
 
-    // June-specific Journaling preference toggles
-    var alwaysOpenNewNote by remember { mutableStateOf(true) }
-    var markdownEditorEnabled by remember { mutableStateOf(true) }
-    var appLockBiometric by remember { mutableStateOf(false) }
-
-    // Rhythm mini-player state
-    var isMiniPlayerPlaying by remember { mutableStateOf(true) }
+    // Modal Bottom Sheet State
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var isBottomSheetOpen by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -140,6 +171,32 @@ fun OthersWayScreen(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = "Back"
                         )
+                    }
+                },
+                actions = {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        modifier = Modifier.padding(end = 12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.secondary)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "COMMUNITY",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -189,20 +246,28 @@ fun OthersWayScreen(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Midnight Horizon",
+                                text = track.title,
                                 style = MaterialTheme.typography.titleMedium.copy(fontSize = 14.sp),
                                 fontWeight = FontWeight.SemiBold
                             )
                             Text(
-                                text = "Aetheria • Rhythm MiniPlayer",
+                                text = "${track.artist} • ${track.bitrate}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
 
-                        IconButton(onClick = { isMiniPlayerPlaying = !isMiniPlayerPlaying }) {
+                        IconButton(onClick = { isFavorite = !isFavorite }) {
                             Icon(
-                                imageVector = if (isMiniPlayerPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                                imageVector = if (isFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+                                contentDescription = "Favorite",
+                                tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        IconButton(onClick = { isPlaying = !isPlaying }) {
+                            Icon(
+                                imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                                 contentDescription = "Play/Pause"
                             )
                         }
@@ -229,7 +294,7 @@ fun OthersWayScreen(
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = {
                         Text(
-                            text = "Search settings, patches, audio...",
+                            text = "Search presets, modules, frequencies...",
                             style = MaterialTheme.typography.bodyMedium
                         )
                     },
@@ -261,7 +326,7 @@ fun OthersWayScreen(
                 )
             }
 
-            // microg-RE Inspired Status Banner
+            // 1. microg-RE Inspired Status Banner
             item {
                 JuneSettingsSection {
                     JuneSettingsItem(
@@ -295,29 +360,232 @@ fun OthersWayScreen(
                 }
             }
 
-            // Section 1: Gboard Patches (Connected Settings List - June Architecture)
+            // 2. CATEGORIES: Community Horizontal Chips Row
             item {
-                val filteredTweaks = tweaks.filter {
+                Column {
+                    Text(
+                        text = "Acoustic Spaces & Categories",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
+                    )
+
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        MockDataProvider.categories.forEach { category ->
+                            val isSelected = selectedCategory == category
+                            FilterChip(
+                                selected = isSelected,
+                                onClick = { selectedCategory = category },
+                                label = { Text(category) },
+                                leadingIcon = if (isSelected) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                        )
+                                    }
+                                } else null,
+                                shape = RoundedCornerShape(8.dp) // Community rectilinear corners
+                            )
+                        }
+                    }
+                }
+            }
+
+            // 3. MEDIA ENGINE & PLAYBACK RATE (mpvEx & June Connected Section)
+            item {
+                JuneSettingsSection(title = "MEDIA ENGINE & PLAYBACK RATE (MPVEX)") {
+                    // Playback Rate Row with Segmented Buttons
+                    JuneSettingsItem(
+                        title = "Playback Rate (libmpv)",
+                        subtitle = "Dynamic variable rate stepping",
+                        index = 0,
+                        count = 2,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.Speed,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        content = {
+                            Spacer(modifier = Modifier.height(10.dp))
+                            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                                speeds.forEachIndexed { index, speedLabel ->
+                                    SegmentedButton(
+                                        shape = SegmentedButtonDefaults.itemShape(
+                                            index = index,
+                                            count = speeds.size
+                                        ),
+                                        onClick = { selectedSpeedIndex = index },
+                                        selected = selectedSpeedIndex == index
+                                    ) {
+                                        Text(speedLabel, style = MaterialTheme.typography.labelSmall)
+                                    }
+                                }
+                            }
+                        }
+                    )
+
+                    // Audio Stream Track Row with Dropdown
+                    JuneSettingsItem(
+                        title = "Audio Stream Track",
+                        subtitle = selectedAudioTrack,
+                        index = 1,
+                        count = 2,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.Movie,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        trailingContent = {
+                            Box {
+                                Surface(
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                    modifier = Modifier.clickable { isAudioMenuOpen = true }
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Tracks",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                        MaterialChevron(tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                                    }
+                                }
+
+                                DropdownMenu(
+                                    expanded = isAudioMenuOpen,
+                                    onDismissRequest = { isAudioMenuOpen = false }
+                                ) {
+                                    audioTracks.forEach { trackName ->
+                                        DropdownMenuItem(
+                                            text = { Text(trackName) },
+                                            onClick = {
+                                                selectedAudioTrack = trackName
+                                                isAudioMenuOpen = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        },
+                        onClick = { isAudioMenuOpen = true }
+                    )
+                }
+            }
+
+            // 4. DSP TUNING SLIDERS (June Connected Section)
+            item {
+                JuneSettingsSection(title = "DSP HARMONICS & HAPTICS (COMMUNITY)") {
+                    // Continuous Spatial Resonance Slider
+                    JuneSettingsItem(
+                        title = "DSP Harmonic Resonance",
+                        subtitle = "Spatial audio reverberation (${(spatialResonance * 100).toInt()}%)",
+                        index = 0,
+                        count = 2,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.GraphicEq,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        content = {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Slider(
+                                value = spatialResonance,
+                                onValueChange = { spatialResonance = it }
+                            )
+                        }
+                    )
+
+                    // Discrete Haptic Slider
+                    JuneSettingsItem(
+                        title = "Haptic Vibration Amplitude",
+                        subtitle = "Tactile motor intensity (${(hapticIntensity * 100).toInt()}%)",
+                        index = 1,
+                        count = 2,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.Vibration,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        content = {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Slider(
+                                value = hapticIntensity,
+                                onValueChange = { hapticIntensity = it },
+                                steps = 4
+                            )
+                        }
+                    )
+                }
+            }
+
+            // 5. STUDIO PRESETS (June Connected Section with Radio Buttons)
+            item {
+                JuneSettingsSection(title = "ACOUSTIC STUDIO PRESETS (JUNE LIST)") {
+                    presets.forEachIndexed { index, preset ->
+                        val isSelected = selectedPresetId == preset.id
+                        JuneSettingsItem(
+                            title = preset.name,
+                            subtitle = preset.description,
+                            index = index,
+                            count = presets.size,
+                            leadingContent = {
+                                RadioButton(
+                                    selected = isSelected,
+                                    onClick = { selectedPresetId = preset.id }
+                                )
+                            },
+                            onClick = { selectedPresetId = preset.id }
+                        )
+                    }
+                }
+            }
+
+            // 6. SYSTEM MODULES CATALOG (Gboard-patches & Morphe Manager Style)
+            item {
+                val filteredModules = modules.filter {
                     searchQuery.isEmpty() ||
-                            it.title.contains(searchQuery, ignoreCase = true) ||
-                            it.summary.contains(searchQuery, ignoreCase = true)
+                            it.name.contains(searchQuery, ignoreCase = true) ||
+                            it.description.contains(searchQuery, ignoreCase = true)
                 }
 
-                if (filteredTweaks.isNotEmpty()) {
-                    JuneSettingsSection(title = "GBOARD PATCHES (COMMUNITY TOGGLES)") {
-                        filteredTweaks.forEachIndexed { index, tweak ->
-                            val isChecked = tweakStates[tweak.id] ?: false
+                if (filteredModules.isNotEmpty()) {
+                    JuneSettingsSection(title = "SYSTEM MODULES CATALOG (GBOARD & MORPHE)") {
+                        filteredModules.forEachIndexed { index, module ->
+                            val isChecked = moduleStates[module.id] ?: false
                             val iconVector = when (index % 3) {
                                 0 -> Icons.Rounded.FormatColorFill
                                 1 -> Icons.Rounded.Keyboard
-                                else -> Icons.Rounded.TextFields
+                                else -> Icons.Rounded.Security
                             }
 
                             JuneSettingsItem(
-                                title = tweak.title,
-                                subtitle = tweak.summary,
+                                title = module.name,
+                                subtitle = "${module.version} • ${module.description}",
                                 index = index,
-                                count = filteredTweaks.size,
+                                count = filteredModules.size,
                                 leadingContent = {
                                     Icon(
                                         imageVector = iconVector,
@@ -330,8 +598,8 @@ fun OthersWayScreen(
                                     Switch(
                                         checked = isChecked,
                                         onCheckedChange = { checked ->
-                                            tweakStates = tweakStates.toMutableMap().apply {
-                                                put(tweak.id, checked)
+                                            moduleStates = moduleStates.toMutableMap().apply {
+                                                put(module.id, checked)
                                             }
                                         },
                                         thumbContent = if (isChecked) {
@@ -346,8 +614,8 @@ fun OthersWayScreen(
                                     )
                                 },
                                 onClick = {
-                                    tweakStates = tweakStates.toMutableMap().apply {
-                                        put(tweak.id, !isChecked)
+                                    moduleStates = moduleStates.toMutableMap().apply {
+                                        put(module.id, !isChecked)
                                     }
                                 }
                             )
@@ -356,229 +624,77 @@ fun OthersWayScreen(
                 }
             }
 
-            // Section 2: mpvEx Media Controls (Connected List with Embedded Controls)
+            // 7. DIAGNOSTICS & STATUS
             item {
-                if (searchQuery.isEmpty() || "media playback mpvex audio stream rate".contains(searchQuery, ignoreCase = true)) {
-                    JuneSettingsSection(title = "MEDIA ENGINE & PLAYBACK RATE (MPVEX)") {
-                        // Rate Selector connected item
-                        JuneSettingsItem(
-                            title = "Playback Rate (libmpv)",
-                            subtitle = "Dynamic variable rate stepping",
-                            index = 0,
-                            count = 2,
-                            leadingContent = {
-                                Icon(
-                                    imageVector = Icons.Rounded.Speed,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            },
-                            content = {
-                                Spacer(modifier = Modifier.height(10.dp))
-                                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                                    playbackSpeeds.forEachIndexed { index, speedLabel ->
-                                        SegmentedButton(
-                                            shape = SegmentedButtonDefaults.itemShape(
-                                                index = index,
-                                                count = playbackSpeeds.size
-                                            ),
-                                            onClick = { selectedSpeedIndex = index },
-                                            selected = selectedSpeedIndex == index
-                                        ) {
-                                            Text(speedLabel, style = MaterialTheme.typography.labelSmall)
-                                        }
-                                    }
-                                }
-                            }
-                        )
-
-                        // Audio Track Selector connected item with Dropdown
-                        JuneSettingsItem(
-                            title = "Audio Stream Track",
-                            subtitle = selectedAudioTrack,
-                            index = 1,
-                            count = 2,
-                            leadingContent = {
-                                Icon(
-                                    imageVector = Icons.Rounded.Movie,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            },
-                            trailingContent = {
-                                Box {
-                                    Surface(
-                                        shape = RoundedCornerShape(12.dp),
-                                        color = MaterialTheme.colorScheme.primaryContainer,
-                                        modifier = Modifier.clickable { isAudioMenuExpanded = true }
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text(
-                                                text = "Tracks",
-                                                style = MaterialTheme.typography.labelMedium,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            MaterialChevron(tint = MaterialTheme.colorScheme.onPrimaryContainer)
-                                        }
-                                    }
-
-                                    DropdownMenu(
-                                        expanded = isAudioMenuExpanded,
-                                        onDismissRequest = { isAudioMenuExpanded = false }
-                                    ) {
-                                        audioTracks.forEach { track ->
-                                            DropdownMenuItem(
-                                                text = { Text(track) },
-                                                onClick = {
-                                                    selectedAudioTrack = track
-                                                    isAudioMenuExpanded = false
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
-                            },
-                            onClick = { isAudioMenuExpanded = true }
-                        )
-                    }
-                }
-            }
-
-            // Section 3: Morphe Manager Catalog (Connected Settings List - June Architecture)
-            item {
-                val filteredPatches = patches.filter {
-                    searchQuery.isEmpty() ||
-                            it.name.contains(searchQuery, ignoreCase = true) ||
-                            it.description.contains(searchQuery, ignoreCase = true)
-                }
-
-                if (filteredPatches.isNotEmpty()) {
-                    JuneSettingsSection(title = "MORPHE MANAGER PATCH CATALOG") {
-                        filteredPatches.forEachIndexed { index, patch ->
-                            val isChecked = patchStates[patch.id] ?: false
-                            val iconVector = when (index % 3) {
-                                0 -> Icons.Rounded.Extension
-                                1 -> Icons.Rounded.Security
-                                else -> Icons.Rounded.Vibration
-                            }
-
-                            JuneSettingsItem(
-                                title = patch.name,
-                                subtitle = "${patch.version} • ${patch.description}",
-                                index = index,
-                                count = filteredPatches.size,
-                                leadingContent = {
-                                    Icon(
-                                        imageVector = iconVector,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.secondary,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                },
-                                trailingContent = {
-                                    Switch(
-                                        checked = isChecked,
-                                        onCheckedChange = { checked ->
-                                            patchStates = patchStates.toMutableMap().apply {
-                                                put(patch.id, checked)
-                                            }
-                                        }
-                                    )
-                                },
-                                onClick = {
-                                    patchStates = patchStates.toMutableMap().apply {
-                                        put(patch.id, !isChecked)
-                                    }
-                                }
+                JuneSettingsSection(title = "ENGINE DIAGNOSTICS") {
+                    JuneSettingsItem(
+                        title = "Buffer Health (88%)",
+                        subtitle = "Hardware libmpv pipe • Zero copy surface",
+                        index = 0,
+                        count = 1,
+                        leadingContent = {
+                            CircularProgressIndicator(
+                                progress = { 0.88f },
+                                modifier = Modifier.size(28.dp),
+                                color = MaterialTheme.colorScheme.secondary
                             )
+                        },
+                        trailingContent = {
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = MaterialTheme.colorScheme.secondaryContainer
+                            ) {
+                                Text(
+                                    text = "60 FPS",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
-                    }
+                    )
                 }
             }
 
-            // Section 4: June Journaling & Privacy Preferences (Direct June Architecture)
+            // 8. ACTION SUITE (Community Button Row)
             item {
-                if (searchQuery.isEmpty() || "june note editor markdown biometric vault lock".contains(searchQuery, ignoreCase = true)) {
-                    JuneSettingsSection(title = "JUNE JOURNALING & PRIVACY") {
-                        // Always Open New Note
-                        JuneSettingsItem(
-                            title = "Always Open New Note",
-                            subtitle = "Instantly open the journaling composer upon app launch",
-                            index = 0,
-                            count = 3,
-                            leadingContent = {
-                                Icon(
-                                    imageVector = Icons.Rounded.EditNote,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            },
-                            trailingContent = {
-                                Switch(
-                                    checked = alwaysOpenNewNote,
-                                    onCheckedChange = { alwaysOpenNewNote = it }
-                                )
-                            },
-                            onClick = { alwaysOpenNewNote = !alwaysOpenNewNote }
-                        )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Button(
+                        onClick = { },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Render")
+                    }
 
-                        // Markdown Rich Text Editor
-                        JuneSettingsItem(
-                            title = "Markdown Editor",
-                            subtitle = if (markdownEditorEnabled) "Rich markdown formatting enabled" else "Plain text mode",
-                            index = 1,
-                            count = 3,
-                            leadingContent = {
-                                Icon(
-                                    imageVector = Icons.Rounded.TextFields,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            },
-                            trailingContent = {
-                                Switch(
-                                    checked = markdownEditorEnabled,
-                                    onCheckedChange = { markdownEditorEnabled = it }
-                                )
-                            },
-                            onClick = { markdownEditorEnabled = !markdownEditorEnabled }
-                        )
+                    FilledTonalButton(
+                        onClick = { },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Export")
+                    }
 
-                        // Biometric & Vault Lock
-                        JuneSettingsItem(
-                            title = "Vault & App Lock",
-                            subtitle = if (appLockBiometric) "Biometric fingerprint authentication required" else "Unrestricted local access",
-                            index = 2,
-                            count = 3,
-                            leadingContent = {
-                                Icon(
-                                    imageVector = if (appLockBiometric) Icons.Rounded.Fingerprint else Icons.Rounded.Lock,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            },
-                            trailingContent = {
-                                Switch(
-                                    checked = appLockBiometric,
-                                    onCheckedChange = { appLockBiometric = it }
-                                )
-                            },
-                            onClick = { appLockBiometric = !appLockBiometric }
-                        )
+                    OutlinedButton(
+                        onClick = {
+                            spatialResonance = 0.78f
+                            hapticIntensity = 0.65f
+                            selectedSpeedIndex = 1
+                        },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Reset")
                     }
                 }
             }
 
             item {
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(60.dp))
             }
         }
     }
