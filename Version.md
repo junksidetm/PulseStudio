@@ -188,3 +188,18 @@
   - `app/src/main/java/com/darksidestudio/pulsestudio/ui/screens/AiWayScreen.kt`
   - `app/src/main/java/com/darksidestudio/pulsestudio/ui/screens/OthersWayScreen.kt`
   - `Version.md` (Appended)
+
+### [2026-11-03 17:09:00 IST] Pre-Release v1.2.0-dev02 Published & Artifact Verification
+- **Status:** Pre-Release v1.2.0-dev02 Published & CI Green
+- **Repository:** `junksidetm/PulseStudio`
+- **Branch:** `dev`
+- **Version:** v1.2.0-dev02
+- **Summary:**
+  - Automated CI/CD release workflow (`build.yml`) completed successfully in 1m44s (run `41628867780`, Job ID `125893013400`).
+  - Unit tests executed cleanly with zero failures across all test suites.
+  - Built and production-signed universal APK `PulseStudio-universal.apk` accompanied by SHA256 checksums.
+  - Published official GitHub Pre-Release `v1.2.0-dev02` with `prerelease: true` and exact release title `v1.2.0-dev02` adhering strictly to release naming and tagging mandates.
+  - Verified Dynamic Version Knower rendering `v1.2.0-dev02` with tertiary accent indicator at the base of `HomeScreen.kt`.
+  - Verified signed tag `v1.2.0-dev02` synchronized across GitHub (`junksidetm`) and GitLab (`mrdarksidetm`) mirrors.
+- **Files Modified:**
+  - `Version.md` (Appended)
