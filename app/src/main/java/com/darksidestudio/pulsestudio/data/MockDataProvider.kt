@@ -116,7 +116,8 @@ object MockDataProvider {
             description = "Controls amplitude vibration intensity instead of millisecond duration.",
             category = "Haptics",
             isEnabled = false,
-            isCore = false
+            isCore = false,
+            isExperimental = true
         ),
         SystemModule(
             id = "mod-microg",
@@ -135,6 +136,25 @@ object MockDataProvider {
             category = "Theming",
             isEnabled = true,
             isCore = false
+        )
+    )
+
+    val sampleTimeline = listOf(
+        TimelineCard(
+            id = "tm-1",
+            title = "Architecting Expressive Components",
+            snippet = "Refactored the segmented button hierarchy and replaced flat tabs with dynamic spring-loaded chips.",
+            mood = "Focused",
+            dateText = "Today • 2:15 PM",
+            tag = "Design"
+        ),
+        TimelineCard(
+            id = "tm-2",
+            title = "Zero-OOM Canvas Rendering",
+            snippet = "Eliminated Dalvik heap allocations on continuous audio waveforms using pre-allocated Path buffers.",
+            mood = "Energetic",
+            dateText = "Yesterday • 8:40 PM",
+            tag = "Performance"
         )
     )
 

@@ -26,9 +26,19 @@ data class SystemModule(
     val description: String,
     val category: String,
     val isEnabled: Boolean = true,
-    val isCore: Boolean = false
+    val isCore: Boolean = false,
+    val isExperimental: Boolean = false
 )
 
-// Legacy compatibility aliases for existing references if any
+data class TimelineCard(
+    val id: String,
+    val title: String,
+    val snippet: String,
+    val mood: String,
+    val dateText: String,
+    val tag: String
+)
+
+// Aliases for compatibility
 typealias PatchModule = SystemModule
 typealias SystemTweak = SystemModule

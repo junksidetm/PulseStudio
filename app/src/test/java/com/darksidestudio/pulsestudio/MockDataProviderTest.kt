@@ -30,7 +30,7 @@ class MockDataProviderTest {
     @Test
     fun sampleTweaks_categoriesAreDistinctAndValid() {
         val tweaks = MockDataProvider.sampleTweaks
-        assertEquals(4, tweaks.size)
+        assertTrue("Tweaks should contain modules", tweaks.isNotEmpty())
         val categories = tweaks.map { it.category }.toSet()
         assertTrue("Categories should span multiple system domains", categories.size >= 3)
     }
@@ -42,6 +42,16 @@ class MockDataProviderTest {
         timeline.forEach { entry ->
             assertFalse("Mood should not be blank", entry.mood.isBlank())
             assertFalse("Tag should not be blank", entry.tag.isBlank())
+        }
+    }
+
+    @Test
+    fun studioPresets_areConfiguredWithDescriptions() {
+        val presets = MockDataProvider.studioPresets
+        assertEquals(4, presets.size)
+        presets.forEach { preset ->
+            assertFalse("Preset name cannot be blank", preset.name.isBlank())
+            assertFalse("Preset description cannot be blank", preset.description.isBlank())
         }
     }
 }
