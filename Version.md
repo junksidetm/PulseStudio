@@ -120,3 +120,24 @@
   - Verified signed tag `v1.2.0` on GitHub and GitLab mirrors.
 - **Files Modified:**
   - `Version.md` (Appended)
+
+
+### [2026-11-03 16:40:00 IST] Dynamic Version Knower Mandate & Pre-Release v1.2.0-dev01 Scaffolding
+- **Status:** Pre-Release v1.2.0-dev01 Prepared
+- **Repository:** `junksidetm/PulseStudio`
+- **Branch:** `dev`
+- **Version:** v1.2.0-dev01
+- **Continuous Evolution & Dynamic Version Mandate:**
+  - **Dynamic Runtime Binding:** Added the **Dynamic Version Knower** pill badge at the base of `HomeScreen.kt`. The component dynamically interrogates `PackageManager.PackageInfo` / `BuildConfig.VERSION_NAME` at runtime, ensuring the active version string is automatically and permanently displayed without manual string hardcoding.
+  - **Release Pipeline Invariant:** Every subsequent code update pushed to the repository is strictly mandated to increment the semantic version, cut a new cryptographically signed Git tag, and publish a new corresponding GitHub Release (or Pre-Release on `dev`). The Dynamic Version Knower automatically reflects this new version upon APK compilation.
+- **Pre-Release Scaffolding:**
+  - Initialized isolated `dev` development branch.
+  - Configured `build.yml` CI/CD to handle multi-branch (`main`, `dev`) workflows and pre-release tagging with `prerelease: true`.
+  - Bumped version coordinates to `1.2.0-dev01` (versionCode 4) in `gradle.properties` and `app/build.gradle.kts`.
+  - Enabled `buildConfig = true` in `app/build.gradle.kts` buildFeatures.
+- **Files Modified:**
+  - `.github/workflows/build.yml`
+  - `gradle.properties` (Bumped to 1.2.0-dev01)
+  - `app/build.gradle.kts` (versionCode 4, versionName 1.2.0-dev01, buildConfig enabled)
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/screens/HomeScreen.kt` (Dynamic Version Knower added)
+  - `Version.md` (Appended)
