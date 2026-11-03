@@ -141,3 +141,18 @@
   - `app/build.gradle.kts` (versionCode 4, versionName 1.2.0-dev01, buildConfig enabled)
   - `app/src/main/java/com/darksidestudio/pulsestudio/ui/screens/HomeScreen.kt` (Dynamic Version Knower added)
   - `Version.md` (Appended)
+
+### [2026-11-03 16:45:00 IST] Pre-Release v1.2.0-dev01 Published & Artifact Verification
+- **Status:** Pre-Release v1.2.0-dev01 Published & CI Green
+- **Repository:** `junksidetm/PulseStudio`
+- **Branch:** `dev`
+- **Version:** v1.2.0-dev01
+- **Summary:**
+  - Automated CI/CD workflow (`build.yml`) completed successfully in 1m52s (run `41625548367`, Job ID `125881856753`).
+  - Unit tests passed cleanly with zero failures.
+  - Generated and production-signed universal APK `PulseStudio-universal.apk` and attached SHA256 checksums.
+  - Published official GitHub Pre-Release `v1.2.0-dev01` with `prerelease: true` and exact release title `v1.2.0-dev01`.
+  - Dynamic Version Knower verified at the base of `HomeScreen.kt`, rendering `v1.2.0-dev01` with tertiary accent dot indicator.
+  - Verified signed tag `v1.2.0-dev01` across GitHub (`junksidetm`) and GitLab (`mrdarksidetm`) mirrors.
+- **Files Modified:**
+  - `Version.md` (Appended)
