@@ -270,3 +270,15 @@
   - `app/build.gradle.kts` (versionCode 7, versionName 1.3.0-dev01)
   - `app/src/main/java/com/darksidestudio/pulsestudio/ui/screens/OthersWayScreen.kt` (Full Morphe Appearance Suite integrated)
   - `Version.md` (Appended)
+
+
+### [2026-11-03 17:42:00 IST] Fix Layout Alignment in MorpheThemeSelector
+- **Status:** In Progress
+- **Repository:** `junksidetm/PulseStudio`
+- **Branch:** `dev`
+- **Version:** v1.3.0-dev01
+- **Summary:**
+  - Added missing `fillMaxSize` import and corrected `Column` layout parameters (`verticalArrangement = Arrangement.Center`, `horizontalAlignment = Alignment.CenterHorizontally`) in `MorpheAppearanceComponents.kt`.
+- **Files Modified:**
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/components/MorpheAppearanceComponents.kt`
+  - `Version.md` (Appended)
