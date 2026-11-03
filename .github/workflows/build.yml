@@ -1,0 +1,157 @@
+name: Build & Release Pulse Studio APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build_production_apk:
+    name: Build & Release Universal APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+
+      - name: Ensure Gradlew Executable
+        run: chmod +x gradlew
+
+      - name: Run Unit Tests
+        run: ./gradlew testReleaseUnitTest --no-daemon
+
+      - name: Configure Production Signing Keystore
+        id: setup-keystore
+        env:
+          SECRET_KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          SECRET_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SECRET_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SECRET_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          mkdir -p keystore
+          if [ -n "$SECRET_KEYSTORE_BASE64" ]; then
+            echo "Using production keystore from repository secrets."
+            echo "$SECRET_KEYSTORE_BASE64" | base64 --decode > keystore/release.jks
+            echo "KEYSTORE_PATH=${GITHUB_WORKSPACE}/keystore/release.jks" >> $GITHUB_ENV
+            echo "KEYSTORE_PASSWORD=$SECRET_KEYSTORE_PASSWORD" >> $GITHUB_ENV
+            echo "KEY_ALIAS=$SECRET_KEY_ALIAS" >> $GITHUB_ENV
+            echo "KEY_PASSWORD=$SECRET_KEY_PASSWORD" >> $GITHUB_ENV
+          elif git ls-remote --exit-code --heads origin ci-keystore >/dev/null 2>&1; then
+            echo "Fetching existing production keystore from origin/ci-keystore branch..."
+            git fetch origin ci-keystore:ci-keystore
+            git show ci-keystore:release.jks > keystore/release.jks
+            echo "KEYSTORE_PATH=${GITHUB_WORKSPACE}/keystore/release.jks" >> $GITHUB_ENV
+            echo "KEYSTORE_PASSWORD=pulsestudio_production_pass" >> $GITHUB_ENV
+            echo "KEY_ALIAS=pulsestudio_key" >> $GITHUB_ENV
+            echo "KEY_PASSWORD=pulsestudio_production_pass" >> $GITHUB_ENV
+            echo "Production keystore reused successfully."
+          else
+            echo "Generating permanent 2048-bit RSA production keystore..."
+            keytool -genkeypair -v \
+              -keystore keystore/release.jks \
+              -alias pulsestudio_key \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -storepass "pulsestudio_production_pass" \
+              -keypass "pulsestudio_production_pass" \
+              -dname "CN=Pulse Studio, OU=Design, O=DarksideStudio, L=Bangalore, ST=KA, C=IN"
+            echo "KEYSTORE_PATH=${GITHUB_WORKSPACE}/keystore/release.jks" >> $GITHUB_ENV
+            echo "KEYSTORE_PASSWORD=pulsestudio_production_pass" >> $GITHUB_ENV
+            echo "KEY_ALIAS=pulsestudio_key" >> $GITHUB_ENV
+            echo "KEY_PASSWORD=pulsestudio_production_pass" >> $GITHUB_ENV
+
+            # Persist keystore to ci-keystore branch for subsequent builds
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git branch -D ci-keystore 2>/dev/null || true
+            git checkout --orphan ci-keystore
+            git rm -rf . >/dev/null 2>&1 || true
+            cp keystore/release.jks ./release.jks
+            git add release.jks
+            git commit -m "ci: persist permanent production signing keystore"
+            git push origin ci-keystore --force
+            git checkout -f main || git checkout -f master
+            echo "Keystore persisted successfully to ci-keystore branch."
+          fi
+
+      - name: Build Production Signed APK
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Stage Release Artifacts
+        run: |
+          mkdir -p artifacts
+          find app/build/outputs/apk/release/ -name "*.apk" -exec cp {} artifacts/PulseStudio-universal.apk \;
+          sha256sum artifacts/PulseStudio-universal.apk > artifacts/PulseStudio-universal.apk.sha256
+          ls -la artifacts/
+
+      - name: Upload Universal APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PulseStudio-Universal-APK
+          path: artifacts/PulseStudio-universal.apk
+          retention-days: 30
+
+      - name: Upload SHA256 Checksums
+        uses: actions/upload-artifact@v4
+        with:
+          name: PulseStudio-SHA256
+          path: artifacts/*.sha256
+          retention-days: 30
+
+      - name: Extract App Version
+        id: version
+        run: |
+          VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts || echo "1.0.0")
+          echo "version=$VERSION_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release (On Main Branch)
+        if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: "v${{ steps.version.outputs.version }}"
+          body: |
+            Universal production release APK for **Pulse Studio**.
+
+            ## 🎨 Overview
+            Pulse Studio is a side-by-side design benchmark application contrasting two Material 3 Expressive design philosophies:
+            - **The AI Way**: Dynamic high-chroma elevations, reactive harmonic `Canvas` wave visualizer, fluid spring physics, and asymmetrical bento cards.
+            - **The Other's Way**: Real-world community synthesis learning directly from `Gboard-patches` (Settings UI), `Rhythm` (MiniPlayer), `mpvEx` (Speed segmented controls & media cards), `June` (Timeline & mood tags), `microg-RE` (Status banners), and `Morphe Manager` (Patch lists).
+
+            ## 🛠️ Technical Specifications
+            - Target SDK: 35 (Android 15)
+            - Min SDK: 26 (Android 8.0)
+            - UI Framework: 100% Native Jetpack Compose with Material 3 Expressive
+            - Architecture: Pure Offline Mock Engine (Zero DB or network dependencies)
+            - Release Tag & Title: `v${{ steps.version.outputs.version }}`
+
+            ## 🔐 Verification
+            Attached SHA256 checksums verify the integrity of the release asset.
+          files: |
+            artifacts/PulseStudio-universal.apk
+            artifacts/PulseStudio-universal.apk.sha256
