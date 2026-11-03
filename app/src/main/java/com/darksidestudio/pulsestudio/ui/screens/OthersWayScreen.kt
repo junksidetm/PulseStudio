@@ -20,9 +20,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Apps
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.AutoFixHigh
+import androidx.compose.material.icons.rounded.BlurOn
+import androidx.compose.material.icons.rounded.BorderStyle
+import androidx.compose.material.icons.rounded.ChatBubble
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Contrast
 import androidx.compose.material.icons.rounded.Equalizer
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.Favorite
@@ -30,8 +37,10 @@ import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.FormatColorFill
 import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Movie
 import androidx.compose.material.icons.rounded.MusicNote
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.RadioButtonChecked
@@ -42,6 +51,7 @@ import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Vibration
+import androidx.compose.material.icons.rounded.Wallpaper
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -93,12 +103,29 @@ import com.darksidestudio.pulsestudio.data.MockDataProvider
 import com.darksidestudio.pulsestudio.ui.components.JuneSettingsItem
 import com.darksidestudio.pulsestudio.ui.components.JuneSettingsSection
 import com.darksidestudio.pulsestudio.ui.components.MaterialChevron
+import com.darksidestudio.pulsestudio.ui.components.MorpheAccentColor
+import com.darksidestudio.pulsestudio.ui.components.MorpheAccentColorPicker
+import com.darksidestudio.pulsestudio.ui.components.MorpheAccentColors
+import com.darksidestudio.pulsestudio.ui.components.MorpheAppCardColor
+import com.darksidestudio.pulsestudio.ui.components.MorpheAppIconDialog
+import com.darksidestudio.pulsestudio.ui.components.MorpheAppIconVariant
+import com.darksidestudio.pulsestudio.ui.components.MorpheBackgroundType
+import com.darksidestudio.pulsestudio.ui.components.MorpheColorStyle
+import com.darksidestudio.pulsestudio.ui.components.MorpheLanguage
+import com.darksidestudio.pulsestudio.ui.components.MorpheLanguageDialog
+import com.darksidestudio.pulsestudio.ui.components.MorpheLanguages
+import com.darksidestudio.pulsestudio.ui.components.MorphePreviewCard
+import com.darksidestudio.pulsestudio.ui.components.MorpheThemeMode
+import com.darksidestudio.pulsestudio.ui.components.MorpheThemeSelector
+import com.darksidestudio.pulsestudio.ui.components.MorpheUiScaleSetting
 import kotlinx.coroutines.launch
 
 /**
  * "The Other's Way" Screen:
  * Renders the EXACT IDENTICAL Unified Studio Dataset using the Open Source Community's
  * Material 3 Design Patterns:
+ * - MorpheApp/morphe-manager: Complete Appearance Architecture (ThemeSelector, AccentColorSelector,
+ *   PreviewAppCard, UiScaleSetting, AppCardColor, Language & App Icon Customization)
  * - DenserMeerkat/June: Connected settings lists with 28dp/8dp adaptive corners and tactile spring physics
  * - cromaguy/Rhythm: Docked mini-player bar with live progress indicator and playback toggle
  * - marlboro-advance/mpvEx: Segmented rate buttons and dropdown media selector
@@ -143,6 +170,27 @@ fun OthersWayScreen(
     // System Modules Toggle States
     val modules = MockDataProvider.studioModules
     var moduleStates by remember { mutableStateOf(modules.associate { it.id to it.isEnabled }) }
+
+    // Morphe Manager Appearance State
+    var themeMode by remember { mutableStateOf(MorpheThemeMode.SYSTEM) }
+    var colorStyle by remember { mutableStateOf(MorpheColorStyle.MORPHE) }
+    var selectedAccent by remember { mutableStateOf(MorpheAccentColors.first()) }
+    var cardColorMode by remember { mutableStateOf(MorpheAppCardColor.DEFAULT) }
+    var pureBlackTheme by remember { mutableStateOf(false) }
+    var colorAccents by remember { mutableStateOf(true) }
+    var uiScale by remember { mutableFloatStateOf(1.0f) }
+    var selectedLanguage by remember { mutableStateOf(MorpheLanguages.first()) }
+    var selectedAppIcon by remember { mutableStateOf(MorpheAppIconVariant.DEFAULT_GLOBE) }
+    var outlines by remember { mutableStateOf(false) }
+    var blur by remember { mutableStateOf(true) }
+    var backgroundType by remember { mutableStateOf(MorpheBackgroundType.RESONANT_WAVE) }
+    var showGreetingPhrases by remember { mutableStateOf(true) }
+    var showRepatchNotice by remember { mutableStateOf(true) }
+    var showMoreAppsCard by remember { mutableStateOf(true) }
+
+    // Dialog Visibility State
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    var showAppIconDialog by remember { mutableStateOf(false) }
 
     // Modal Bottom Sheet State
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -331,7 +379,7 @@ fun OthersWayScreen(
                 JuneSettingsSection {
                     JuneSettingsItem(
                         title = "Core Environment Active",
-                        subtitle = "microG Core • Gboard Engine • mpvEx Pipeline Ready",
+                        subtitle = "microG Core • Gboard Engine • Morphe Appearance Loaded",
                         index = 0,
                         count = 1,
                         leadingContent = {
@@ -360,7 +408,436 @@ fun OthersWayScreen(
                 }
             }
 
-            // 2. CATEGORIES: Community Horizontal Chips Row
+            // 2. MORPHE MANAGER: LIVE PREVIEW CARD
+            item {
+                Column {
+                    Text(
+                        text = "LIVE THEME PREVIEW (MORPHE MANAGER)",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 6.dp, bottom = 6.dp, top = 2.dp)
+                    )
+                    MorphePreviewCard(
+                        themeMode = themeMode,
+                        colorStyle = colorStyle,
+                        accentColor = selectedAccent,
+                        cardColorMode = cardColorMode,
+                        pureBlack = pureBlackTheme,
+                        outlines = outlines
+                    )
+                }
+            }
+
+            // 3. MORPHE MANAGER: THEME & COLOR STYLES
+            item {
+                JuneSettingsSection(title = "THEME & COLOR STYLES (MORPHE MANAGER)") {
+                    // Theme and Style Segmented Row
+                    JuneSettingsItem(
+                        title = "Theme Mode & Palette Style",
+                        subtitle = "${themeMode.label} • ${colorStyle.label}",
+                        index = 0,
+                        count = 4,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.Palette,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        content = {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            MorpheThemeSelector(
+                                selectedTheme = themeMode,
+                                onThemeSelected = { themeMode = it },
+                                selectedStyle = colorStyle,
+                                onStyleSelected = { colorStyle = it }
+                            )
+                            if (colorStyle != MorpheColorStyle.DYNAMIC) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                MorpheAccentColorPicker(
+                                    selectedAccent = selectedAccent,
+                                    onAccentSelected = { selectedAccent = it }
+                                )
+                            }
+                        }
+                    )
+
+                    // Pure Black OLED Switch
+                    JuneSettingsItem(
+                        title = "Pure Black (OLED)",
+                        subtitle = "Deep OLED pitch black (#000000) for surfaces in dark mode",
+                        index = 1,
+                        count = 4,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.Contrast,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        trailingContent = {
+                            Switch(
+                                checked = pureBlackTheme,
+                                onCheckedChange = { pureBlackTheme = it },
+                                thumbContent = if (pureBlackTheme) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                                        )
+                                    }
+                                } else null
+                            )
+                        },
+                        onClick = { pureBlackTheme = !pureBlackTheme }
+                    )
+
+                    // Color Accents Switch
+                    JuneSettingsItem(
+                        title = "Color Accents",
+                        subtitle = "Tint surface controls, badges, and sliders with active accent",
+                        index = 2,
+                        count = 4,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.FormatColorFill,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        trailingContent = {
+                            Switch(
+                                checked = colorAccents,
+                                onCheckedChange = { colorAccents = it },
+                                thumbContent = if (colorAccents) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                                        )
+                                    }
+                                } else null
+                            )
+                        },
+                        onClick = { colorAccents = !colorAccents }
+                    )
+
+                    // App Card Colors Palette Mode
+                    JuneSettingsItem(
+                        title = "App Card Color Palette",
+                        subtitle = "Active: ${cardColorMode.label} Gradient",
+                        index = 3,
+                        count = 4,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.AutoAwesome,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        content = {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                                MorpheAppCardColor.entries.forEachIndexed { idx, mode ->
+                                    SegmentedButton(
+                                        shape = SegmentedButtonDefaults.itemShape(
+                                            index = idx,
+                                            count = MorpheAppCardColor.entries.size
+                                        ),
+                                        onClick = { cardColorMode = mode },
+                                        selected = cardColorMode == mode
+                                    ) {
+                                        Text(mode.label, style = MaterialTheme.typography.labelSmall)
+                                    }
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+
+            // 4. MORPHE MANAGER: DISPLAY & SCALE
+            item {
+                JuneSettingsSection(title = "DISPLAY & SCALE (MORPHE MANAGER)") {
+                    // App Language
+                    JuneSettingsItem(
+                        title = "App Language",
+                        subtitle = "${selectedLanguage.flag} ${selectedLanguage.displayName}",
+                        index = 0,
+                        count = 3,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.Language,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        trailingContent = {
+                            MaterialChevron(tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        },
+                        onClick = { showLanguageDialog = true }
+                    )
+
+                    // UI Scale Setting
+                    JuneSettingsItem(
+                        title = "UI Scaling Factor",
+                        subtitle = "Custom layout density (${(uiScale * 100).toInt()}%)",
+                        index = 1,
+                        count = 3,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.Speed,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        content = {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            MorpheUiScaleSetting(
+                                currentScale = uiScale,
+                                onApplyScale = { uiScale = it },
+                                onResetScale = { uiScale = 1.0f }
+                            )
+                        }
+                    )
+
+                    // Launcher App Icon
+                    JuneSettingsItem(
+                        title = "Launcher App Icon",
+                        subtitle = selectedAppIcon.label,
+                        index = 2,
+                        count = 3,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.Apps,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        trailingContent = {
+                            MaterialChevron(tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        },
+                        onClick = { showAppIconDialog = true }
+                    )
+                }
+            }
+
+            // 5. MORPHE MANAGER: SURFACE EFFECTS & BACKGROUND
+            item {
+                JuneSettingsSection(title = "SURFACE EFFECTS & BACKGROUND (MORPHE MANAGER)") {
+                    // High-contrast Outlines
+                    JuneSettingsItem(
+                        title = "High-Contrast Outlines",
+                        subtitle = "Draw explicit hairline borders around cards and surface containers",
+                        index = 0,
+                        count = 3,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.BorderStyle,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        trailingContent = {
+                            Switch(
+                                checked = outlines,
+                                onCheckedChange = { outlines = it },
+                                thumbContent = if (outlines) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                                        )
+                                    }
+                                } else null
+                            )
+                        },
+                        onClick = { outlines = !outlines }
+                    )
+
+                    // Frosted Blur
+                    JuneSettingsItem(
+                        title = "Frosted Background Blur",
+                        subtitle = "Hardware Gaussian blur under modal sheets and floating bars",
+                        index = 1,
+                        count = 3,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.BlurOn,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        trailingContent = {
+                            Switch(
+                                checked = blur,
+                                onCheckedChange = { blur = it },
+                                thumbContent = if (blur) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                                        )
+                                    }
+                                } else null
+                            )
+                        },
+                        onClick = { blur = !blur }
+                    )
+
+                    // Animated Background Type
+                    JuneSettingsItem(
+                        title = "Dynamic Animated Background",
+                        subtitle = "${backgroundType.label} • ${backgroundType.description}",
+                        index = 2,
+                        count = 3,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.Wallpaper,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        trailingContent = {
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = MaterialTheme.colorScheme.primaryContainer
+                            ) {
+                                Text(
+                                    text = "CYCLE",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                )
+                            }
+                        },
+                        onClick = {
+                            val allBg = MorpheBackgroundType.entries
+                            val nextIdx = (allBg.indexOf(backgroundType) + 1) % allBg.size
+                            backgroundType = allBg[nextIdx]
+                        }
+                    )
+                }
+            }
+
+            // 6. MORPHE MANAGER: HOME SCREEN CUSTOMIZATION
+            item {
+                JuneSettingsSection(title = "HOME SCREEN CUSTOMIZATION (MORPHE MANAGER)") {
+                    // Greeting Phrases
+                    JuneSettingsItem(
+                        title = "Greeting Phrases",
+                        subtitle = "Show dynamic time-aware greeting banner on home screen",
+                        index = 0,
+                        count = 3,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.ChatBubble,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        trailingContent = {
+                            Switch(
+                                checked = showGreetingPhrases,
+                                onCheckedChange = { showGreetingPhrases = it },
+                                thumbContent = if (showGreetingPhrases) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                                        )
+                                    }
+                                } else null
+                            )
+                        },
+                        onClick = { showGreetingPhrases = !showGreetingPhrases }
+                    )
+
+                    // Repatch Notice
+                    JuneSettingsItem(
+                        title = "Repatch & Sync Notice",
+                        subtitle = "Show notice when patch or module updates are available",
+                        index = 1,
+                        count = 3,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.AutoFixHigh,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        trailingContent = {
+                            Switch(
+                                checked = showRepatchNotice,
+                                onCheckedChange = { showRepatchNotice = it },
+                                thumbContent = if (showRepatchNotice) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                                        )
+                                    }
+                                } else null
+                            )
+                        },
+                        onClick = { showRepatchNotice = !showRepatchNotice }
+                    )
+
+                    // Companion Apps Card
+                    JuneSettingsItem(
+                        title = "Companion Apps & Modules Card",
+                        subtitle = "Display ecosystem companion tools and module quick switcher",
+                        index = 2,
+                        count = 3,
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.Apps,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        },
+                        trailingContent = {
+                            Switch(
+                                checked = showMoreAppsCard,
+                                onCheckedChange = { showMoreAppsCard = it },
+                                thumbContent = if (showMoreAppsCard) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                                        )
+                                    }
+                                } else null
+                            )
+                        },
+                        onClick = { showMoreAppsCard = !showMoreAppsCard }
+                    )
+                }
+            }
+
+            // 7. CATEGORIES: Community Horizontal Chips Row
             item {
                 Column {
                     Text(
@@ -398,7 +875,7 @@ fun OthersWayScreen(
                 }
             }
 
-            // 3. MEDIA ENGINE & PLAYBACK RATE (mpvEx & June Connected Section)
+            // 8. MEDIA ENGINE & PLAYBACK RATE (mpvEx & June Connected Section)
             item {
                 JuneSettingsSection(title = "MEDIA ENGINE & PLAYBACK RATE (MPVEX)") {
                     // Playback Rate Row with Segmented Buttons
@@ -489,7 +966,7 @@ fun OthersWayScreen(
                 }
             }
 
-            // 4. DSP TUNING SLIDERS (June Connected Section)
+            // 9. DSP TUNING SLIDERS (June Connected Section)
             item {
                 JuneSettingsSection(title = "DSP HARMONICS & HAPTICS (COMMUNITY)") {
                     // Continuous Spatial Resonance Slider
@@ -541,7 +1018,7 @@ fun OthersWayScreen(
                 }
             }
 
-            // 5. STUDIO PRESETS (June Connected Section with Radio Buttons)
+            // 10. STUDIO PRESETS (June Connected Section with Radio Buttons)
             item {
                 JuneSettingsSection(title = "ACOUSTIC STUDIO PRESETS (JUNE LIST)") {
                     presets.forEachIndexed { index, preset ->
@@ -563,7 +1040,7 @@ fun OthersWayScreen(
                 }
             }
 
-            // 6. SYSTEM MODULES CATALOG (Gboard-patches & Morphe Manager Style)
+            // 11. SYSTEM MODULES CATALOG (Gboard-patches & Morphe Manager Style)
             item {
                 val filteredModules = modules.filter {
                     searchQuery.isEmpty() ||
@@ -624,7 +1101,7 @@ fun OthersWayScreen(
                 }
             }
 
-            // 7. DIAGNOSTICS & STATUS
+            // 12. DIAGNOSTICS & STATUS
             item {
                 JuneSettingsSection(title = "ENGINE DIAGNOSTICS") {
                     JuneSettingsItem(
@@ -657,7 +1134,7 @@ fun OthersWayScreen(
                 }
             }
 
-            // 8. ACTION SUITE (Community Button Row)
+            // 13. ACTION SUITE (Community Button Row)
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -684,6 +1161,15 @@ fun OthersWayScreen(
                             spatialResonance = 0.78f
                             hapticIntensity = 0.65f
                             selectedSpeedIndex = 1
+                            themeMode = MorpheThemeMode.SYSTEM
+                            colorStyle = MorpheColorStyle.MORPHE
+                            selectedAccent = MorpheAccentColors.first()
+                            cardColorMode = MorpheAppCardColor.DEFAULT
+                            pureBlackTheme = false
+                            colorAccents = true
+                            uiScale = 1.0f
+                            outlines = false
+                            blur = true
                         },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(8.dp)
@@ -697,5 +1183,23 @@ fun OthersWayScreen(
                 Spacer(modifier = Modifier.height(60.dp))
             }
         }
+    }
+
+    // Morphe Language Selection Dialog
+    if (showLanguageDialog) {
+        MorpheLanguageDialog(
+            currentLanguage = selectedLanguage,
+            onLanguageSelected = { selectedLanguage = it },
+            onDismiss = { showLanguageDialog = false }
+        )
+    }
+
+    // Morphe Launcher App Icon Dialog
+    if (showAppIconDialog) {
+        MorpheAppIconDialog(
+            currentVariant = selectedAppIcon,
+            onVariantSelected = { selectedAppIcon = it },
+            onDismiss = { showAppIconDialog = false }
+        )
     }
 }

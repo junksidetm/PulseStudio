@@ -234,3 +234,39 @@
   - Verified signed tag `v1.3.0` synchronized across GitHub (`junksidetm`) and GitLab (`mrdarksidetm`) mirrors.
 - **Files Modified:**
   - `Version.md` (Appended)
+
+
+### [2026-11-03 17:36:00 IST] Version v1.3.0-dev01 Bump: Morphe Manager Appearance Architecture Suite
+- **Status:** Pre-Release v1.3.0-dev01 Prepared
+- **Repository:** `junksidetm/PulseStudio`
+- **Branch:** `dev`
+- **Version:** v1.3.0-dev01
+- **Morphe Manager Appearance Integration:**
+  - Implemented the complete Morphe Manager (`MorpheApp/morphe-manager`) Appearance Settings Suite directly into "The Other's Way" screen (`OthersWayScreen.kt`), honoring the community design ethos:
+    - **Live Preview Card (`PreviewAppCard`)**: Real-time interactive preview card demonstrating dynamic surface colors, accent gradients, status pill badges ("READY"), and active color style effects.
+    - **Theme & Color Styles (`ThemeSelector`)**: Compact modern card tiles for Theme Mode (`System`, `Light`, `Dark`) and Color Style (`Morphe`, `Dynamic / Material You`, `Monochrome`).
+    - **Accent Color Swatches (`AccentColorSelector`)**: 6-swatch palette selector (Cobalt Blue, Neon Cyan, Violet Indigo, Emerald Green, Sunset Amber, Crimson Coral) with active checkmark.
+    - **Pure Black Theme (OLED)**: Switch item (`Contrast` icon) enabling deep pitch-black (`#000000`) surfaces for OLED power efficiency in dark mode.
+    - **Color Accents Switch**: Tints secondary surface controls, badges, and sliders with active accent color.
+    - **App Card Color Palette**: Segmented button row allowing user selection of gradient styles (`Default`, `Vibrant`, `Pastel`, `Contrast`).
+    - **Display & Scale (`DisplaySection` & `UiScaleSetting`)**:
+      - App Language selector item with interactive flag dialog (`English`, `Japanese`, `German`, `French`, `Spanish`).
+      - UI Scaling factor slider (85% to 115%) with dedicated `Apply` and `Reset (100%)` action buttons.
+      - Launcher App Icon customizer dialog with 4 distinct icon variants (`Resonant Globe`, `OLED Minimal`, `Cyberpunk Neon`, `Midnight Dark`).
+    - **Surface Effects & Background (`EffectsSection`)**:
+      - High-Contrast Outlines toggle (`BorderStyle` icon) for explicit hairline boundaries.
+      - Frosted Background Blur toggle (`BlurOn` icon) for hardware Gaussian blur.
+      - Dynamic Animated Background selector (`Resonant Wave`, `Parallax Grid`, `Matrix Rain`, `Starfield`, `None`).
+    - **Home Screen Customization (`HomeScreenSection`)**:
+      - Greeting Phrases toggle (`ChatBubble` icon).
+      - Repatch & Sync Notice toggle (`AutoFixHigh` icon).
+      - Companion Apps & Modules Card toggle (`Apps` icon).
+  - Upgraded pre-release version coordinates to `1.3.0-dev01` (versionCode 7) in `gradle.properties` and `app/build.gradle.kts`.
+  - Dynamic Version Knower automatically binds to `v1.3.0-dev01` with tertiary indicator at runtime.
+- **Files Created:**
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/components/MorpheAppearanceComponents.kt`
+- **Files Modified:**
+  - `gradle.properties` (Bumped to 1.3.0-dev01)
+  - `app/build.gradle.kts` (versionCode 7, versionName 1.3.0-dev01)
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/screens/OthersWayScreen.kt` (Full Morphe Appearance Suite integrated)
+  - `Version.md` (Appended)
