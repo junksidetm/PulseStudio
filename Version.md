@@ -66,3 +66,15 @@
   - `app/src/main/res/drawable/ic_launcher_foreground.xml` (Updated with 66px safe-area pulse globe vector)
   - `app/src/main/res/values/colors.xml` (Updated ic_launcher_background to #FEF9FF)
   - `Version.md` (Appended)
+
+### [2026-11-03 16:11:00 IST] Release v1.1.0 Published & Artifact Verification
+- **Status:** Release v1.1.0 Published & CI Green
+- **Repository:** `junksidetm/PulseStudio`
+- **Version:** v1.1.0
+- **Summary:**
+  - Automated CI/CD release workflow (`build.yml`) completed successfully in 1m15s (run `41621022889`, Job ID `125866456602`).
+  - Built and production-signed universal APK `PulseStudio-universal.apk` featuring the new 66px safe-area pulse globe adaptive icon vector.
+  - Published official GitHub Release `v1.1.0` with release title `v1.1.0` adhering strictly to release title and tagging mandates.
+  - Verified multi-platform synchronization across GitHub (`junksidetm`) and GitLab (`mrdarksidetm`).
+- **Files Modified:**
+  - `Version.md` (Appended)
