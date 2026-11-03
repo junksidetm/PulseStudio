@@ -25,3 +25,15 @@
 - **Files Created:**
   - `GEMINI.md`
   - `Version.md`
+
+### [2026-11-03 15:23:00 IST] Hardening CI Gradlew Execution & Release Workflow
+- **Status:** In Progress
+- **Repository:** `junksidetm/PulseStudio`
+- **Version:** v1.0.0
+- **Summary:**
+  - Configured executable permission flag (`100755`) for `gradlew` in Git index.
+  - Added explicit `chmod +x gradlew` step preceding `./gradlew assembleRelease` in `.github/workflows/build.yml` to prevent permission denial across branch checkouts.
+- **Files Modified:**
+  - `.github/workflows/build.yml`
+  - `gradlew`
+  - `Version.md` (Appended)

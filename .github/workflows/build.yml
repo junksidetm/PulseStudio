@@ -100,7 +100,9 @@ jobs:
           fi
 
       - name: Build Production Signed APK
-        run: ./gradlew assembleRelease --no-daemon
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
 
       - name: Stage Release Artifacts
         run: |
