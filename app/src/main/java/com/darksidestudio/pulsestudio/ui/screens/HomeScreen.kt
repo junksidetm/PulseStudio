@@ -57,7 +57,7 @@ fun HomeScreen(
             .padding(horizontal = 20.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Hero Pill Chip
         Surface(
@@ -85,7 +85,7 @@ fun HomeScreen(
             }
         }
 
-        // Title & Mission
+        // Title & Mission Statement
         Text(
             text = "Pulse Studio",
             style = MaterialTheme.typography.displayLarge.copy(fontSize = 38.sp),
@@ -100,36 +100,36 @@ fun HomeScreen(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 12.dp)
         )
 
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Harmonic Preview Wave
+        // Seamless Periodic Harmonic Preview Wave
         PulseWaveVisualizer(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            height = 64.dp
+                .padding(horizontal = 8.dp),
+            height = 68.dp
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Option 1: The AI Way
+        // Flat, borderless tonal card with 0dp elevation to eliminate harsh borders
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(28.dp)),
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
             ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+            border = null
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(22.dp)
+                    .padding(20.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -138,7 +138,7 @@ fun HomeScreen(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(46.dp)
+                            .size(44.dp)
                             .clip(CircleShape)
                             .background(
                                 Brush.linearGradient(
@@ -154,7 +154,7 @@ fun HomeScreen(
                             imageVector = Icons.Rounded.AutoAwesome,
                             contentDescription = null,
                             tint = Color.White,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                     }
 
@@ -172,7 +172,7 @@ fun HomeScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 Text(
                     text = "The AI Way",
@@ -219,20 +219,20 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         // Option 2: The Other's Way
+        // Flat, borderless tonal card with 0dp elevation to eliminate harsh borders
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(28.dp)),
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
             ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+            border = null
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(22.dp)
+                    .padding(20.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -241,7 +241,7 @@ fun HomeScreen(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(46.dp)
+                            .size(44.dp)
                             .clip(CircleShape)
                             .background(
                                 Brush.linearGradient(
@@ -257,7 +257,7 @@ fun HomeScreen(
                             imageVector = Icons.Rounded.Groups,
                             contentDescription = null,
                             tint = Color.White,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                     }
 
@@ -275,7 +275,7 @@ fun HomeScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 Text(
                     text = "The Other's Way",
@@ -287,7 +287,7 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = "Community synthesis inspired directly by Gboard-patches, Rhythm, mpvEx, June, microg-RE, and Morphe Manager: 24dp grouped cards, hairline dividers, M3 switches, segmented controls, service status banners, and mini player bar.",
+                    text = "Community synthesis inspired directly by June (Connected settings lists), Gboard-patches (Switches & dividers), mpvEx (Segmented controls), Rhythm (Mini player bar), microg-RE (Service status), and Morphe Manager (Module catalog).",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

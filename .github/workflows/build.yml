@@ -143,7 +143,7 @@ jobs:
             ## 🎨 Overview
             Pulse Studio is a side-by-side design benchmark application contrasting two Material 3 Expressive design philosophies:
             - **The AI Way**: Dynamic high-chroma elevations, reactive harmonic `Canvas` wave visualizer, fluid spring physics, and asymmetrical bento cards.
-            - **The Other's Way**: Real-world community synthesis learning directly from `Gboard-patches` (Settings UI), `Rhythm` (MiniPlayer), `mpvEx` (Speed segmented controls & media cards), `June` (Timeline & mood tags), `microg-RE` (Status banners), and `Morphe Manager` (Patch lists).
+            - **The Other's Way**: Real-world community synthesis learning directly from `June` (Connected settings lists & adaptive spring tiles), `Gboard-patches` (Settings UI & switches), `Rhythm` (MiniPlayer), `mpvEx` (Speed segmented controls & media cards), `microg-RE` (Status banners), and `Morphe Manager` (Patch catalog).
 
             ## 🛠️ Technical Specifications
             - Target SDK: 35 (Android 15)

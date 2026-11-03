@@ -78,3 +78,32 @@
   - Verified multi-platform synchronization across GitHub (`junksidetm`) and GitLab (`mrdarksidetm`).
 - **Files Modified:**
   - `Version.md` (Appended)
+
+
+### [2026-11-03 16:26:00 IST] Version v1.2.0 Bump: June Connected Settings Architecture, Waveform Loop Continuity & Card Border Eradication
+- **Status:** Release v1.2.0 Prepared
+- **Repository:** `junksidetm/PulseStudio`
+- **Version:** v1.2.0
+- **Summary:**
+  - Upgraded semantic version to `v1.2.0` across `gradle.properties` and `app/build.gradle.kts` (versionCode 3, versionName 1.2.0).
+  - Synthesized and implemented `DenserMeerkat/June` Connected Settings architecture in `OthersWayScreen.kt`:
+    - Created `JuneSettingsSection` providing 28dp clipped containers with 2dp item spacing.
+    - Created `JuneSettingsItem` providing position-aware adaptive rounded corner geometry (28dp on outer bounds, 8dp on connected bounds) with interactive spring physics (`Spring.DampingRatioMediumBouncy`) morphing corners to 28dp on touch press.
+    - Added June-style pill search bar (`OutlinedTextField` with `CircleShape` and live query filtering).
+    - Grouped settings into Gboard Patches, mpvEx Media Rate & Tracks, Morphe Manager Modules, and June Journaling & Privacy sections.
+  - Eliminated harsh card borders on `HomeScreen.kt`:
+    - Removed elevation shadows (`elevation = 0.dp`) and double-clip modifier boundaries.
+    - Specified explicit `border = null` and tonal container surfaces.
+    - Validated symmetrical vertical and horizontal alignments.
+  - Resolved `PulseWaveVisualizer.kt` waveform jump across infinite loop repeats:
+    - Harmonic temporal multipliers restricted to integers (1 and -1) ensuring f(phase = 0) == f(phase = 2π) with zero frame hitch.
+    - Spatial 4π boundary matching combined with a smooth Hanning window envelope guarantees waveform smoothly anchors at midY on both edges.
+- **Files Created:**
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/components/JuneSettingsComponents.kt`
+- **Files Modified:**
+  - `gradle.properties` (Bumped to 1.2.0)
+  - `app/build.gradle.kts` (versionCode 3, versionName 1.2.0)
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/components/PulseWaveVisualizer.kt`
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/screens/HomeScreen.kt`
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/screens/OthersWayScreen.kt`
+  - `Version.md` (Appended)
