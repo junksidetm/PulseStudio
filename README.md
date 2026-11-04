@@ -9,6 +9,15 @@
 
 1. 🤖 **The AI Way:** Our vision of Material 3 Expressive — high-chroma cobalt elevations (`#3855E0`), an asymmetrical bento grid, reactive harmonic `Canvas` visualizers, fluid spring micro-motion, and morphing extended FABs.
 2. 👥 **The Other's Way:** Real-world community synthesis learning directly from elite Android FOSS projects — 24dp grouped cards, 1dp hairline dividers, M3 switches, segmented controls, service status banners, and persistent mini-player bars.
+3. ⚡ **The Dual Wipe Inspector:** An interactive real-time A/B wipe slider allowing you to slide dynamically across both paradigms on a unified canvas!
+
+---
+
+## 🧠 Machine-Readable AI Knowledge Base
+
+Pulse Studio now bundles the complete technical standard for Material 3 Expressive:
+- [`MATERIAL_3_EXPRESSIVE_SPECIFICATION.md`](./MATERIAL_3_EXPRESSIVE_SPECIFICATION.md): Authoritative technical standard synthesizing all tokens, contrast ratios, and Compose generation rules.
+- [`m3-expressive-knowledge-graph.json`](./m3-expressive-knowledge-graph.json): Structured JSON ontology for LLM context injection and automated verification.
 
 ---
 
