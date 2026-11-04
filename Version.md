@@ -234,3 +234,42 @@
   - Verified signed tag `v1.3.0` synchronized across GitHub (`junksidetm`) and GitLab (`mrdarksidetm`) mirrors.
 - **Files Modified:**
   - `Version.md` (Appended)
+
+
+### [2026-11-04 12:53:00 IST] Version v1.4.0 Bump: True M3 Expressive Theme Engine, Dual Wipe Inspector & ViewModel Architecture
+- **Status:** Release v1.4.0 Prepared
+- **Repository:** `gojoyadav/PulseStudio` (Forked from `junksidetm/PulseStudio`)
+- **Branch:** `main`
+- **Version:** v1.4.0
+- **Summary:**
+  - Upgraded semantic version to `v1.4.0` (versionCode 7) across `gradle.properties` and `app/build.gradle.kts`.
+  - **Full Material 3 Expressive Theme Engine Upgrade:**
+    - Configured the complete 5-level **Surface Container System** (`surfaceContainerLowest`, `surfaceContainerLow`, `surfaceContainer`, `surfaceContainerHigh`, `surfaceContainerHighest`) and `surfaceDim`/`surfaceBright` in `Color.kt` and `Theme.kt`, fully eradicating legacy black drop shadows.
+    - Added `Shape.kt` with `ExpressiveShapes` (4dp micro tags, 8dp chips, 16dp medium, 24dp large cards, 32dp extra large bento hero surfaces, and `CircleShape` pills) and injected it directly into `PulseStudioTheme`.
+    - Expanded `Type.kt` into the complete 15-tier M3 Expressive typography scale (`displayMedium`, `displaySmall`, `headlineLarge`, `titleSmall`, `bodySmall`, `labelMedium` added with explicit tracking).
+    - Set `dynamicColor = false` by default in `PulseStudioTheme` to preserve the signature Cobalt `#3855E0` benchmark identity across Android 12+ devices.
+  - **Native State & Architecture Upgrade:**
+    - Replaced raw Composable `remember { mutableStateOf(...) }` navigation with a dedicated, lifecycle-aware `PulseStudioViewModel` exposing `StateFlow<PulseStudioUiState>`.
+    - Integrated `collectAsStateWithLifecycle()` in `MainActivity.kt`, guaranteeing complete state survival across device rotations, dark mode toggles, and multi-window resizing.
+  - **New Feature: Live Dual Wipe Inspector Screen:**
+    - Created `DualComparisonScreen.kt` featuring an interactive real-time A/B wipe slider (20% to 80% split ratio) allowing users to dynamically inspect "The AI Way" (Cobalt Bento & Harmonic Sine Wave) directly against "The Other's Way" (June 28dp adaptive preference tiles & Rhythm mini-player) side-by-side on a unified canvas.
+    - Added the "Live Dual Wipe Inspector" entry card with animated accent banner to `HomeScreen.kt`.
+    - Added comprehensive unit test suite in `PulseStudioViewModelTest.kt` verifying destination transitions, clamping invariants, and state flows.
+  - **Universal AI Knowledge Base Integration:**
+    - Ingested `MATERIAL_3_EXPRESSIVE_SPECIFICATION.md` and `m3-expressive-knowledge-graph.json` to provide developers and AI agents with the formal mathematical tokens, contrast ratios, and Compose generation rules.
+- **Files Created:**
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/theme/Shape.kt`
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/viewmodel/PulseStudioViewModel.kt`
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/screens/DualComparisonScreen.kt`
+  - `app/src/test/java/com/darksidestudio/pulsestudio/PulseStudioViewModelTest.kt`
+  - `MATERIAL_3_EXPRESSIVE_SPECIFICATION.md`
+  - `m3-expressive-knowledge-graph.json`
+- **Files Modified:**
+  - `gradle.properties` (Bumped to 1.4.0)
+  - `app/build.gradle.kts` (versionCode 7, versionName 1.4.0)
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/theme/Color.kt`
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/theme/Theme.kt`
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/theme/Type.kt`
+  - `app/src/main/java/com/darksidestudio/pulsestudio/MainActivity.kt`
+  - `app/src/main/java/com/darksidestudio/pulsestudio/ui/screens/HomeScreen.kt`
+  - `Version.md` (Appended)
